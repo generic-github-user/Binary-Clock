@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		Binary Clock
+	</title>
+	<link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
+	<style type="text/css">
+		* {
+			margin: 0px;
+			padding: 0px;
+			user-select: none;
+		}
+		body {
+			width: 100%;
+			height: 100%;
+		}
+		body {
+			margin: 0px;
+			padding: 0px;
+			user-select: none;
+		}
+		canvas {
+			width: 100%;
+			height: 100%;
+			z-index: 0;
+			position: absolute;
+		}
+	</style>
+</head>
+	<body>
+
+		<canvas id="canvas" width="1000" height="1000"></canvas>
+	
+		<script type="text/javascript">
+			//
+			canvas = document.getElementById("canvas");
+			context = canvas.getContext("2d");
+
+			//Create main variables for program
+			var date, bits, byte, divisions, divisionSize, hue, lightness;
+			
+			//Rendering function for program - handles time data calculations and canvas display
+			function update() {
+				//Adjust size of canvas to match window
+				context.canvas.width = window.innerWidth;
+				context.canvas.height = window.innerHeight;
+				
+				//Create a new date object, convert it to a string, and assign it to the date variable
+				date = new Date().getMilliseconds()
+				+ " "
+				+ new Date().getSeconds()
+				+ " "
+				+ new Date().getMinutes()
+				+ " "
+				+ new Date().getHours()
+				+ " "
+				+ new Date().getDay()
+				+ " "
+				+ new Date().getDate()
+				+ " "
+				+ new Date().getMonth()
+				+ " "
+				+ new Date().getFullYear();
+				
+				//Reset bits array
+				bits = [];
+				for (var i = 0; i < date.length; i ++) {
+					byte = date.charCodeAt(i).toString(2);
+					for (var j = 0; j < byte.length; j ++) {
+						bits.push(byte.charAt(j));
+					}
+				}
+				
+				divisions = {
+					x: Math.floor(Math.sqrt(bits.length * (canvas.width / canvas.height))),
+					//"Math.sqrt(bits.length / (canvas.width / canvas.height))" would also work.
+					y: Math.floor(Math.sqrt(bits.length * (canvas.height / canvas.width)))
+				};
+				divisionSize = {
+					x: Math.round(canvas.width / divisions.x),
+					y: Math.round(canvas.height / divisions.y)
+				};
+				
+				context.fillStyle = "rgba(255, 255, 255, 1)";
+				context.fillRect(0, 0, canvas.width, canvas.height);
+				
+				for (var i = 0; i < divisions.x; i ++) {
+					for (var j = 0; j < divisions.y; j ++) {
+						//hue = (((new Date().getMilliseconds() / 360) * ((i * divisions.y) + j) * 1));
+						lightness = (parseInt(bits[(i * divisions.y) + j]) * 150) + 50;
+						context.fillStyle = "hsla(" + 0 + ", 0%, " + lightness + "%, 1)";
+						//Fill square on canvas
+						context.fillRect((i * divisionSize.x), (j * divisionSize.y), divisionSize.x, divisionSize.y);
+					}
+				}
+			}
+			
+			var interval = window.setInterval(update, 100);
+		
+		</script>
+		
+	</body>
+</html>
